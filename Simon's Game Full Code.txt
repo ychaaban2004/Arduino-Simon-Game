@@ -1,0 +1,379 @@
+/* Author: Youssef Chaabani - 83399832 - Lab Section: L1J Email: ychaaban@student.ubc.ca
+* Due Date: December, 7, 2021
+* Purpose: To build a functioning Simon Game!
+*/
+//define constants etc.
+int const game_red = 12;
+int const game_yellow = 11;
+int const game_blue = 10;
+int const game_green = 9;
+int const lose_red = 13;
+int const win_green = 8;
+int const rando_pin = 0;
+//button0 corresponds to what the left most button, corresponding to the red LED. button1 corresponds to the button thats right of the button0 corresponding to yellow LED; and so on...
+int const button0 = 7;
+int const button1 = 6;
+int const button2 = 5;
+int const button3 = 4;
+int SEQUENCENUM = 5;
+int LEVELS = 5;
+//define functions prototypes
+void rando(int array[],int i);
+void bridgeLED(int array[],int i);
+void start(void);
+int buttonToLED(int loop_val,int loopButton,int buttonState0,int buttonState1,int buttonState2,int buttonState3);
+void buttonToArray(int levelIs, int buttonForArray[],int loop_val,int loopButton,int buttonState0,int buttonState1,int buttonState2,int buttonState3);
+int checker(int buttonForArray[], int sequence_array[], int levelIs);
+void lose(void);
+void win(void);
+char const test[] = "Game Starting\n";
+
+//initialization
+void setup()
+{
+ pinMode(game_red, OUTPUT);
+ pinMode(game_yellow, OUTPUT);
+ pinMode(game_blue, OUTPUT);
+ pinMode(game_green, OUTPUT);
+ pinMode(lose_red, OUTPUT);
+ pinMode(win_green,OUTPUT);
+  
+ pinMode(button0, INPUT);
+ pinMode(button1, INPUT);
+ pinMode(button2, INPUT);
+ pinMode(button3, INPUT);
+  
+ randomSeed(analogRead(rando_pin));
+
+}
+
+
+//main program loop
+void loop()
+{
+  //variable and array declaration here
+  int i = 0;
+  int rand_array[SEQUENCENUM];
+  int seq_array[SEQUENCENUM];
+  int buttonstate0;
+  int buttonstate1;
+  int buttonstate2;
+  int buttonstate3;
+  int buttonPress = 0;
+  int looper = 0;
+  int level;
+  int buttonArray[LEVELS];
+  int checkeroo;
+
+  
+  //generate random number and write to seq_array which is used to generate LED sequence and check the button input if they match to the random sequence
+  rando(rand_array, i);
+  for(i=0;i<SEQUENCENUM;i++){
+    seq_array[i] = rand_array[i];
+  }
+  
+  //start with flashing ALL LEDS
+  start();
+  
+  //level 1 - print first LED
+  level = 1;
+  //print corresponding LED(s)
+  for(i = 0;i<level;i++){
+    bridgeLED(seq_array,i);
+    }
+ //Record response
+  buttonToArray;
+  
+ //Function to record which button is pressed into an array
+  buttonToArray(level,buttonArray,looper,buttonPress,buttonstate0,buttonstate1,buttonstate2,buttonstate3);
+  
+ //Function to check if pressed button matches the given color(s) returning either 0 or 1 where 0 indicates correct selection and 1 indicates incorrect selection
+  checkeroo = checker(buttonArray, seq_array, level);
+  
+  if(checkeroo == 0){
+   //level 2 - print two LED's - same algorithm but with another LED flashed, recorded and checked
+    level = 2;
+    for(i = 0;i<level;i++){
+    bridgeLED(seq_array,i);
+    }
+    
+    buttonToArray;
+   
+    looper = 0;
+    buttonToArray(level,buttonArray,looper,buttonPress,buttonstate0,buttonstate1,buttonstate2,buttonstate3);
+    
+    checkeroo = checker(buttonArray, seq_array, level);
+    
+    if(checkeroo == 0){
+     //level 3 - print two LED's - same algorithm but with another LED flashed, recorded and checked
+      level = 3;
+      for(i = 0;i<level;i++){
+      bridgeLED(seq_array,i);
+      }
+
+      buttonToArray;
+
+      looper = 0;
+      buttonToArray(level,buttonArray,looper,buttonPress,buttonstate0,buttonstate1,buttonstate2,buttonstate3);
+
+      checkeroo = checker(buttonArray, seq_array, level);
+      
+      if(checkeroo == 0){
+       //level 4 - print two LED's - same algorithm but with another LED flashed, recorded and checked
+        level = 4;
+        for(i = 0;i<level;i++){
+        bridgeLED(seq_array,i);
+        }
+
+        buttonToArray;
+
+        looper = 0;
+        buttonToArray(level,buttonArray,looper,buttonPress,buttonstate0,buttonstate1,buttonstate2,buttonstate3);
+
+        checkeroo = checker(buttonArray, seq_array, level);
+        if(checkeroo == 0){
+         //level 5 - print two LED's - same algorithm but with another LED flashed, recorded and checked
+          level = 5;
+          for(i = 0;i<level;i++){
+          bridgeLED(seq_array,i);
+          }
+
+          buttonToArray;
+
+          looper = 0;
+          buttonToArray(level,buttonArray,looper,buttonPress,buttonstate0,buttonstate1,buttonstate2,buttonstate3);
+
+          checkeroo = checker(buttonArray, seq_array, level);
+
+        }
+        else{
+          //player lost indicated by function to print flashing red light 
+          lose();
+        }
+
+    }
+    else{
+      //player lost indicated by function to print flashing red light 
+      lose();
+  }
+    
+  }
+  else{
+    //player lost indicated by function to print flashing red light 
+	lose();
+  }
+    
+  }
+  else{
+    //player lost indicated by function to print flashing red light 
+	lose();
+  }
+
+  if(checkeroo == 0){
+   //player won indicated by function to print flashing green light
+    win(); 
+  }
+ 
+}
+  
+//Function Purpose: to make a random sequence
+//input: rand_array - to store whatever random number is generated, i - to store it in the correct position in the random array 
+//output: none - void
+void rando(int rand_array[],int i){
+   for(i;i<SEQUENCENUM;i++){
+   rand_array[i] = random(0,4); 
+  }
+}
+//Function Purpose: to take random sequence and translate it into flashing the corresponding LED
+//input: seq_array - the random array values to translate into LED flashing, i - which random number of the sequence to be flashed
+//output: none - void
+void bridgeLED(int seq_array[],int i){
+  if(seq_array[i] == 0){
+     digitalWrite(game_red, HIGH);
+     delay(1000);
+     digitalWrite(game_red,LOW);
+     delay(1000);
+    }
+    else if(seq_array[i] == 1){
+     digitalWrite(game_yellow, HIGH);
+     delay(1000);
+     digitalWrite(game_yellow,LOW);
+     delay(1000);
+    }
+    else if(seq_array[i] == 2){
+     digitalWrite(game_blue, HIGH);
+     delay(1000);
+     digitalWrite(game_blue,LOW);
+     delay(1000);
+    }
+    else if(seq_array[i] == 3){
+     digitalWrite(game_green, HIGH);
+     delay(1000);
+     digitalWrite(game_green,LOW);
+     delay(1000);
+    }
+}
+//Function Purpose: to flash all LED's three times to indicate start of game
+//input: none - void
+//output: none - void
+void start(void){
+ delay(1000);
+ digitalWrite(game_red, HIGH);
+ digitalWrite(game_yellow, HIGH);
+ digitalWrite(game_blue, HIGH);
+ digitalWrite(game_green, HIGH); 
+ delay(1000);
+ digitalWrite(game_red, LOW);
+ digitalWrite(game_yellow, LOW);
+ digitalWrite(game_blue, LOW);
+ digitalWrite(game_green, LOW); 
+ delay(1000);
+}
+//Function Purpose: to turn on the LED that corresponds to the button pressed and record which button was pressed
+//input: looper - parameter value to keep loooping till a button is pressed, buttonPress - value to determine wheter button is pressed or not to turn off LED
+//buttonstate0/1/2/3/ - to hold the voltage value of the button whether HIGH or LOW
+//output: recorded value of what button was pressed
+int buttonToLED(int looper,int buttonPress,int buttonstate0, int buttonstate1,int buttonstate2,int buttonstate3){
+  int checkval;  
+  while(looper == 0){
+      buttonstate0 = digitalRead(button0);
+      buttonstate1 = digitalRead(button1);
+      buttonstate2 = digitalRead(button2);
+      buttonstate3 = digitalRead(button3);
+      if ((buttonPress == 0) && (buttonstate0 == HIGH)) 
+      {
+        // turn LED on
+        digitalWrite(game_red, HIGH);
+        buttonPress = 1;
+        checkval = 0;
+
+      } 
+      else if(buttonPress == 1 && buttonstate0 == LOW && checkval == 0) 
+      {
+        // turn LED off
+        digitalWrite(game_red, LOW);
+        delay(1000);
+        looper = 1;
+
+      }
+     
+      else if ((buttonPress == 0) && (buttonstate1 == HIGH)) 
+      {
+        // turn LED on
+        digitalWrite(game_yellow, HIGH);
+        buttonPress = 1;
+        checkval = 1;
+
+      } 
+      else if (buttonPress == 1 && buttonstate1 == LOW && checkval == 1) 
+      {
+        // turn LED off
+        digitalWrite(game_yellow, LOW);
+        delay(1000);
+        looper = 1;
+
+      }
+        
+      else if ((buttonPress == 0) && (buttonstate2 == HIGH)) 
+      {
+        // turn LED on
+        digitalWrite(game_blue, HIGH);
+        buttonPress = 1;
+        checkval = 2;
+
+      } 
+      else if (buttonPress == 1 && buttonstate2 == LOW && checkval == 2) 
+      {
+        // turn LED off
+        digitalWrite(game_blue, LOW);
+        delay(1000);
+        looper = 1;
+  
+      }  
+       
+     
+      else if ((buttonPress == 0) && (buttonstate3 == HIGH)) 
+      {
+        // turn LED on
+        digitalWrite(game_green, HIGH);
+        buttonPress = 1;
+        checkval = 3;
+        
+
+      } 
+      else if (buttonPress == 1 && buttonstate3 == LOW && checkval == 3) 
+      {
+        // turn LED off
+        digitalWrite(game_green, LOW);
+        delay(1000);
+        looper = 1;
+
+      }
+        
+   }
+  return checkval;
+}
+//Function Purpose: Whatever button is pushed will be stored in array used for checking if the correct buttons are pressed later on
+//input: level of the game(1 LED, 2 LED, etc), array values for buttons pressed, all values for the buttonToLED function to be used
+//output: none - void
+void buttonToArray(int level, int buttonArray[],int looper,int buttonPress, int buttonstate0,int buttonstate1,int buttonstate2,int buttonstate3){
+  for(int i=0;i < level;i++){
+    buttonArray[i] = buttonToLED(looper,buttonPress,buttonstate0,buttonstate1,buttonstate2,buttonstate3);
+  }   
+  
+}
+//Function Purpose: to check if values in the array coming from pushed buttons matches the values of the arrays of the random LED sequence based on how many LEDS need to checked depending on the level
+//input: the buttons pressed array values, the random sequence array values, the level of the game (1 LED, 2 LED, etc)
+//output: returns either 1 or 0 to indicate whether the correct buttons were pressed, meaning of 1 and 0 further explained in void loop function
+int checker(int buttonArray[],int seq_array[],int level){
+  int checkno = 0;
+  
+  for(int i = 0;i < level; i++){
+    if(buttonArray[i] == seq_array[i]){
+    }
+    else{
+     checkno = 1; 
+    }
+  }
+  
+  return checkno;
+}
+//Function Purpose: To flash losing red three times, indicating to player they lost the game
+//input: none - void
+//output: none - void
+void lose(void){
+ digitalWrite(lose_red,HIGH);
+ delay(350);
+ digitalWrite(lose_red,LOW);
+ delay(350);
+  
+ digitalWrite(lose_red,HIGH);
+ delay(350);
+ digitalWrite(lose_red,LOW);
+ delay(350);
+  
+ digitalWrite(lose_red,HIGH);
+ delay(350);
+ digitalWrite(lose_red,LOW);
+ delay(350);
+}
+
+//Function Purpose: To flash winning green three times, indicating to player they won the game
+//input: none - void
+//output: none - void
+void win(void){
+ digitalWrite(win_green,HIGH);
+ delay(350);
+ digitalWrite(win_green,LOW);
+ delay(350);
+  
+ digitalWrite(win_green,HIGH);
+ delay(350);
+ digitalWrite(win_green,LOW);
+ delay(350);
+  
+ digitalWrite(win_green,HIGH);
+ delay(350);
+ digitalWrite(win_green,LOW);
+ delay(350);
+}
